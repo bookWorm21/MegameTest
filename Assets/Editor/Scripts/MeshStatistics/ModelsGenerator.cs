@@ -9,20 +9,20 @@ namespace Assets.Editor.Scripts.MeshStatistics
         public static Model[] GenerateModels(MeshFilter[] meshFilters)
         {
             var groupingModels = meshFilters.GroupBy(f => f.sharedMesh).
-                Select(g => new { Mesh = g.Key, Count = g.Count()});
+                Select(g => new { Mesh = g.Key, Count = g.Count() });
 
             Model[] models = new Model[groupingModels.Count()];
             int i = 0;
 
             foreach (var group in groupingModels)
             {
-                Debug.Log($"{group.Mesh} : {group.Count}");
                 Mesh mesh = group.Mesh;
 
                 string path = AssetDatabase.GetAssetPath(mesh);
                 ModelImporter importer = (ModelImporter)AssetImporter.GetAtPath(path);
 
-                models[i] = new Model(group.Mesh.name,
+                models[i] = new Model(mesh, 
+                                      group.Mesh.name,
                                       path,
                                       mesh.vertexCount,
                                       mesh.triangles.Length / 3,
@@ -34,7 +34,8 @@ namespace Assets.Editor.Scripts.MeshStatistics
                 i++;
             }
 
-                return models;
+            models = models.OrderByDescending(m => m.VertexCountInScene).ToArray();
+            return models;
         }
     }
 }
