@@ -36,14 +36,15 @@ namespace Assets.Editor.Scripts.MeshStatistics
         {
             float wight = (float)Screen.width / (float)_columnNumber;
 
-            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition, true, true, 
-                GUILayout.MinHeight(Screen.height * 0.5f), 
-                GUILayout.MinWidth(Screen.width * 0.5f),
-                GUILayout.MaxHeight(Screen.height),
-                GUILayout.MaxWidth(Screen.width));
-
             EditorGUILayout.BeginVertical();
 
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition, false, true,
+                 GUILayout.MinHeight(Screen.height * 0.2f),
+                 GUILayout.MinWidth(Screen.width * 0.5f),
+                 GUILayout.MaxHeight(Screen.height),
+                 GUILayout.MaxWidth(Screen.width));
+
+            
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Number", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(50));
             EditorGUILayout.LabelField("Mesh name", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(200));
@@ -51,7 +52,7 @@ namespace Assets.Editor.Scripts.MeshStatistics
             EditorGUILayout.LabelField("Polygon count", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(100));
             EditorGUILayout.LabelField("Count in scene", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(100));
             EditorGUILayout.LabelField("Vertex count in scene", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(150));
-            EditorGUILayout.LabelField("IsReadable", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(80));
+            EditorGUILayout.LabelField("Readable", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(80));
             EditorGUILayout.LabelField("UV lightmap", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(80));
             EditorGUILayout.EndHorizontal();
 
