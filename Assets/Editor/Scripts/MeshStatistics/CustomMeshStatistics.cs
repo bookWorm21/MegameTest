@@ -7,8 +7,9 @@ namespace Assets.Editor.Scripts.MeshStatistics
 {
     public class CustomMeshStatistics : EditorWindow
     {
+        private Model[] _models;
         private ModelsViewer _viewer = new ModelsViewer();
-        private bool filterEnabled = false;
+        private Filter _filter = new Filter();
 
         [MenuItem("Window/Custom/MeshStatistics")]
         static private void Init()
@@ -30,24 +31,35 @@ namespace Assets.Editor.Scripts.MeshStatistics
 
         private void OnGUI()
         {
-            filterEnabled = EditorGUILayout.BeginToggleGroup("Filters", filterEnabled);
-            if (filterEnabled)
+            if (GUILayout.Button("Update Meshes", GUILayout.MaxWidth(100), GUILayout.MaxHeight(50)))
             {
-
-                if (GUILayout.Button("Apply", GUILayout.MaxWidth(100), GUILayout.MaxHeight(50)))
-                {
-
-                }
+                UpdateModels();
             }
-            EditorGUILayout.EndToggleGroup();
 
+            _filter.View();
+            EditorGUILayout.Space(2);
+            if (GUILayout.Button("Apply filters", GUILayout.MaxWidth(100), GUILayout.MaxHeight(50)))
+            {
+                SetModelsInViewer();
+            }
+
+            EditorGUILayout.Space(4);
             _viewer.View();
         }
 
         private void UpdateModels()
         {
             MeshFilter[] meshFilters = FindObjectsOfType<MeshFilter>();
-            _viewer.SetModels(ModelsGenerator.GenerateModels(meshFilters));
+            _models = ModelsGenerator.GenerateModels(meshFilters);
+            SetModelsInViewer();
+        }
+
+        private void SetModelsInViewer()
+        {
+            Model[] models = new Model[_models.Length];
+            System.Array.Copy(_models, models, _models.Length);
+            models = _filter.UseFilter(models);
+            _viewer.SetModels(models);
         }
 
         private void OnChangeImportParametrs(Model model, bool isReadable, bool generateUv)
