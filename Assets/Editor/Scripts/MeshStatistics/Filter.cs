@@ -45,73 +45,54 @@ namespace Assets.Editor.Scripts.MeshStatistics
             EditorGUILayout.EndToggleGroup();
         }
 
-        public Model[] UseFilter(Model[] models)
+        public IEnumerable<Model> UseFilter(IEnumerable<Model> filteredModels)
         {
+            var tempList = filteredModels.ToList();
             if (FilterEnabled)
             {
-                Model[] filteredModels = models;
-                int minValue;
-                int maxValue;
-                bool enabled;
-
                 if (_subStringField.UseFilter)
                 {
-                    string subString = _subStringField.SubString;
-                    filteredModels = filteredModels.Where(m => m.MeshName.Contains(subString)).ToArray();
+                    filteredModels = filteredModels.Where(m => m.MeshName.Contains(_subStringField.SubString));
                 }
 
                 if (_countVertexField.UseFilter)
                 {
-                    minValue = _countVertexField.MinValue;
-                    maxValue = _countVertexField.MaxValue;
-                    filteredModels = filteredModels.Where(m => m.VertexCount <= maxValue && 
-                    m.VertexCount >= minValue).ToArray();
+                    filteredModels = filteredModels.Where(m => m.VertexCount <= _countVertexField.MaxValue && 
+                    m.VertexCount >= _countVertexField.MinValue);
                 }
 
                 if(_countPolygonField.UseFilter)
                 {
-                    minValue = _countPolygonField.MinValue;
-                    maxValue = _countPolygonField.MaxValue;
-                    filteredModels = filteredModels.Where(m => m.PolygonCount <= maxValue && 
-                    m.PolygonCount >= minValue).ToArray();
+                    filteredModels = filteredModels.Where(m => m.PolygonCount <= _countPolygonField.MaxValue && 
+                    m.PolygonCount >= _countPolygonField.MinValue);
                 }
-
 
                 if (_countInSceneField.UseFilter)
                 {
-                    minValue = _countInSceneField.MinValue;
-                    maxValue = _countInSceneField.MaxValue;
-
-                    filteredModels = filteredModels.Where(m => m.CountInScene <= maxValue && 
-                    m.CountInScene >= minValue).ToArray();
+                    filteredModels = filteredModels.Where(m => m.CountInScene <= _countInSceneField.MaxValue &&
+                    m.CountInScene >= _countInSceneField.MinValue);
                 }
 
                 if(_sumVertexField.UseFilter)
                 {
-                    minValue = _sumVertexField.MinValue;
-                    maxValue = _sumVertexField.MaxValue;
-                    filteredModels = filteredModels.Where(m => m.VertexCountInScene <= maxValue && 
-                    m.VertexCountInScene >= minValue).ToArray();
+                    filteredModels = filteredModels.Where(m => m.VertexCountInScene <= _sumVertexField.MaxValue && 
+                    m.VertexCountInScene >= _sumVertexField.MinValue);
                 }
 
                 if (_readableField.UseFilter)
                 {
-                    enabled = _readableField.ChangeIndex != 1 ? true : false;
-                    filteredModels = filteredModels.Where(m => m.ImportSettings.IsReadable == enabled).ToArray();
+                    filteredModels = filteredModels.Where(m => m.ImportSettings.IsReadable 
+                    == (_readableField.ChangeIndex != 1));
                 }
 
                 if (_uvGenerateField.UseFilter)
                 {
-                    enabled = _uvGenerateField.ChangeIndex != 1;
-                    filteredModels = filteredModels.Where(m => m.ImportSettings.GenerateUv == enabled).ToArray();
+                    filteredModels = filteredModels.Where(m => m.ImportSettings.GenerateUv 
+                    == (_uvGenerateField.ChangeIndex != 1));
                 }
+            }
 
-                return filteredModels.ToArray();
-            }
-            else
-            {
-                return models;
-            }
+            return filteredModels;
         }
     }
 }
