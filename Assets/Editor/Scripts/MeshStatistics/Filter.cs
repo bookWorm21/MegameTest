@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -10,6 +9,8 @@ namespace Assets.Editor.Scripts.MeshStatistics
 { 
     public class Filter
     {
+        private Sorter _sorter = new Sorter();
+
         private StringField _subStringField = new StringField("Search by name");
 
         private ValueField _countVertexField = new ValueField("Vertex count");
@@ -21,6 +22,13 @@ namespace Assets.Editor.Scripts.MeshStatistics
         private BoolField _uvGenerateField = new BoolField("UV lightmap Filter");
 
         public bool FilterEnabled { get; private set; }
+
+        public event System.Action ClickedApply;
+
+        public void Start()
+        {
+            _sorter.Start();
+        }
 
         public void View()
         {
@@ -40,6 +48,14 @@ namespace Assets.Editor.Scripts.MeshStatistics
                 _readableField.View();
                 _uvGenerateField.View();
 
+                _sorter.View();
+
+                EditorGUILayout.Space(2);
+                if (GUILayout.Button("Apply filters", GUILayout.MaxWidth(100), GUILayout.MaxHeight(50)))
+                {
+                    ClickedApply?.Invoke();
+                }
+
                 EditorGUILayout.EndVertical();
             }
             EditorGUILayout.EndToggleGroup();
@@ -47,7 +63,6 @@ namespace Assets.Editor.Scripts.MeshStatistics
 
         public IEnumerable<Model> UseFilter(IEnumerable<Model> filteredModels)
         {
-            var tempList = filteredModels.ToList();
             if (FilterEnabled)
             {
                 if (_subStringField.UseFilter)
@@ -92,7 +107,7 @@ namespace Assets.Editor.Scripts.MeshStatistics
                 }
             }
 
-            return filteredModels;
+            return _sorter.UseSort(filteredModels);
         }
     }
 }

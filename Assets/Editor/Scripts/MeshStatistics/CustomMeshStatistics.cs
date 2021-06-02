@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 namespace Assets.Editor.Scripts.MeshStatistics
 {
@@ -21,12 +20,15 @@ namespace Assets.Editor.Scripts.MeshStatistics
         private void OnEnable()
         {
             UpdateModels();
+            _filter.Start();
             _viewer.ChangedParametrs += OnChangeImportParametrs;
+            _filter.ClickedApply += SetModelsInViewer;
         }
 
         private void OnDisable()
         {
             _viewer.ChangedParametrs -= OnChangeImportParametrs;
+            _filter.ClickedApply -= SetModelsInViewer;
         }
 
         private void OnGUI()
@@ -37,11 +39,6 @@ namespace Assets.Editor.Scripts.MeshStatistics
             }
 
             _filter.View();
-            EditorGUILayout.Space(2);
-            if (GUILayout.Button("Apply filters", GUILayout.MaxWidth(100), GUILayout.MaxHeight(50)))
-            {
-                SetModelsInViewer();
-            }
 
             EditorGUILayout.Space(4);
             _viewer.View();
@@ -58,15 +55,17 @@ namespace Assets.Editor.Scripts.MeshStatistics
         {
             Model[] models = new Model[_models.Length];
             System.Array.Copy(_models, models, _models.Length);
-            models = _filter.UseFilter(models);
-            _viewer.SetModels(models);
+            _viewer.SetModels(_filter.UseFilter(models).ToArray());
         }
 
         private void OnChangeImportParametrs(Model model, bool isReadable, bool generateUv)
         {
             ModelImportSettings settings = new ModelImportSettings(isReadable, generateUv);
-            model.ChangeImportSettings(settings);
-            ReimportModel.ChangeModelImportSettings(model.AssetsPath, settings);
+
+            if (ReimportModel.TryChangeModelImportSettings(model.AssetsPath, settings))
+            {
+                model.ChangeImportSettings(settings);
+            }
         }
     }
 }
