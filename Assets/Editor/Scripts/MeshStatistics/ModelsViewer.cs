@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -44,7 +42,6 @@ namespace Assets.Editor.Scripts.MeshStatistics
                  GUILayout.MaxHeight(Screen.height),
                  GUILayout.MaxWidth(Screen.width));
 
-            
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Number", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(50));
             EditorGUILayout.LabelField("Mesh name", EditorStyles.boldLabel, GUILayout.Width(wight), GUILayout.MaxWidth(200));
@@ -60,7 +57,10 @@ namespace Assets.Editor.Scripts.MeshStatistics
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(_views[i].Number, GUILayout.Width(wight), GUILayout.MaxWidth(50));
-                EditorGUILayout.LabelField(_views[i].MeshName, GUILayout.Width(wight), GUILayout.MaxWidth(200));
+                if(GUILayout.Button(_views[i].MeshName, "Label", GUILayout.Width(wight), GUILayout.MaxWidth(200)))
+                {
+                    EditorGUIUtility.PingObject(_models[i].InstanceId);
+                }
                 EditorGUILayout.LabelField(_views[i].VertexCount.ToString(), GUILayout.Width(wight), GUILayout.MaxWidth(100));
                 EditorGUILayout.LabelField(_views[i].PolygonCount.ToString(), GUILayout.Width(wight), GUILayout.MaxWidth(100));
                 EditorGUILayout.LabelField(_views[i].CountInScene.ToString(), GUILayout.Width(wight), GUILayout.MaxWidth(100));
@@ -72,6 +72,9 @@ namespace Assets.Editor.Scripts.MeshStatistics
                     _views[i].GenerateUv != _models[i].ImportSettings.GenerateUv)
                 {
                     ChangedParametrs?.Invoke(_models[i], _views[i].IsReadable, _views[i].GenerateUv);
+
+                    _views[i].IsReadable = _models[i].ImportSettings.IsReadable;
+                    _views[i].GenerateUv = _models[i].ImportSettings.GenerateUv;
                 }
 
                 EditorGUILayout.EndHorizontal();
